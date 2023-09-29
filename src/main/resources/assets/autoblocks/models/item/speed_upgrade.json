@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "autoblocks:item/speed_upgrade"
+  }
+}
