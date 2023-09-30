@@ -1,6 +1,5 @@
 package pitheguy.autoblocks.client.gui;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
@@ -10,11 +9,10 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
+import org.lwjgl.glfw.GLFW;
 import pitheguy.autoblocks.AutoBlocks;
-import pitheguy.autoblocks.blockentity.placer.PlacerLoadException;
-import pitheguy.autoblocks.blocks.AutoPlacerBlock;
 import pitheguy.autoblocks.menu.AutoPlacerMenu;
+import pitheguy.autoblocks.networking.*;
 
 public class AutoPlacerScreen extends AbstractContainerScreen<AutoPlacerMenu> {
     public static final ResourceLocation TEXTURE = new ResourceLocation(AutoBlocks.MODID, "textures/gui/auto_placer.png");
@@ -39,21 +37,21 @@ public class AutoPlacerScreen extends AbstractContainerScreen<AutoPlacerMenu> {
         schematicName = new EditBox(this.font, this.leftPos + 7, this.topPos + 90, 162, 16, Component.literal("Schematic Name"));
         schematicName.setTextColor(-1);
         schematicName.setValue(menu.tileEntity.getSchematicName());
+        schematicName.setResponder(input -> schematicName.active = !input.isEmpty() && !input.equals(menu.tileEntity.getSchematicName()));
         this.addRenderableWidget(schematicName);
         loadButton = new LoadButton();
+        loadButton.active = !menu.tileEntity.hasSchematic();
         this.addRenderableWidget(loadButton);
         startButton = new StartButton();
-        startButton.active = false;
+        startButton.active = menu.tileEntity.hasSchematic() && menu.tileEntity.isRunning();
         this.addRenderableWidget(startButton);
         materialsButton = new MaterialsButton();
-        materialsButton.active = false;
+        materialsButton.active = menu.tileEntity.hasSchematic();
         this.addRenderableWidget(materialsButton);
     }
 
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 256) {
-            this.minecraft.player.closeContainer();
-        }
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) this.minecraft.player.closeContainer();
 
         if (!this.schematicName.keyPressed(keyCode, scanCode, modifiers) && !this.schematicName.canConsumeInput())
             return super.keyPressed(keyCode, scanCode, modifiers);
@@ -67,6 +65,11 @@ public class AutoPlacerScreen extends AbstractContainerScreen<AutoPlacerMenu> {
         RenderSystem.setShaderTexture(0, TEXTURE);
         this.minecraft.getTextureManager().bindForSetup(TEXTURE);
         guiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+        guiGraphics.blit(TEXTURE, this.leftPos + 98, this.topPos + 129, 0, 222, getProgressScaled(), 5);
+    }
+
+    public int getProgressScaled() {
+        return (int) (menu.tileEntity.getProgress() * 71);
     }
 
     class LoadButton extends AbstractButton {
@@ -77,17 +80,7 @@ public class AutoPlacerScreen extends AbstractContainerScreen<AutoPlacerMenu> {
 
         @Override
         public void onPress() {
-            try {
-                menu.tileEntity.loadSchematic(schematicName.getValue());
-                menu.tileEntity.setSchematicName(schematicName.getValue());
-            } catch (PlacerLoadException e) {
-                minecraft.player.closeContainer();
-                minecraft.player.displayClientMessage(Component.literal(e.getMessage()), true);
-                loadButton.active = true;
-                startButton.active = false;
-                materialsButton.active = false;
-                return;
-            }
+            AllPackets.CHANNEL.sendToServer(new LoadSchematicPacket(schematicName.getValue()));
             loadButton.active = false;
             startButton.active = true;
             materialsButton.active = true;
@@ -106,8 +99,8 @@ public class AutoPlacerScreen extends AbstractContainerScreen<AutoPlacerMenu> {
 
         @Override
         public void onPress() {
-            menu.tileEntity.start();
-            minecraft.player.closeContainer();
+            AllPackets.CHANNEL.sendToServer(new StartPlacerPacket());
+            //minecraft.player.closeContainer();
         }
 
         @Override

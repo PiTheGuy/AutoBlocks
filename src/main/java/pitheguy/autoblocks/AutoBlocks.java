@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import pitheguy.autoblocks.client.gui.*;
 import pitheguy.autoblocks.init.ModMenuTypes;
 import pitheguy.autoblocks.init.ModBlocKEntityTypes;
+import pitheguy.autoblocks.networking.AllPackets;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(AutoBlocks.MODID)
@@ -59,6 +60,7 @@ public class AutoBlocks {
 
         AllBlocks.register(modEventBus);
         AllItems.register(modEventBus);
+        AllPackets.registerPackets();
 
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);

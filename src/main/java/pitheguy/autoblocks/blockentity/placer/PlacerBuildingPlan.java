@@ -22,7 +22,13 @@ public class PlacerBuildingPlan {
     }
 
     public BlockState getBlock(int x, int y, int z) {
-        return blocks[x][y][z];
+        BlockState result;
+        try {
+            result = blocks[x][y][z];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return null;
+        }
+        return result;
     }
 
     public Map<Item, Integer> getMaterials() {
@@ -30,6 +36,7 @@ public class PlacerBuildingPlan {
         for (BlockState[][] plane : blocks) {
             for (BlockState[] line : plane) {
                 for (BlockState state : line) {
+                    if (state == null) continue;
                     Item item = state.getBlock().asItem();
                     result.put(item, result.getOrDefault(item, 0) + 1);
                 }

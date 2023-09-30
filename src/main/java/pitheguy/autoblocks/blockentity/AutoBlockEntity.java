@@ -178,6 +178,7 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
 
         } else if (fuelSource != null) {
             fuelSource.removeFuelConsumption(currentFuelConsumption);
+            fuelSource = null;
         }
         update();
     }

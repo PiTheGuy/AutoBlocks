@@ -114,7 +114,7 @@ public class EnergizerBlockEntity extends BlockEntity implements MenuProvider, W
         if (fuelConsumption >= amount) fuelConsumption -= amount;
         else {
             LOGGER.error("Tried to remove more fuel consumption than was registered");
-            //throw new IllegalStateException("Tried to remove more fuel consumption than was registered");
+            throw new IllegalStateException("Tried to remove more fuel consumption than was registered");
         }
     }
 
