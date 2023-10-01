@@ -118,10 +118,11 @@ public class AutoPlacerBlockEntity extends AutoBlockEntity {
         findFuelSource();
         if (fuelSource == null) return Status.NOT_ENOUGH_FUEL;
         if (getProgress() == 1.0) return Status.FINISHED;
-        return Status.RUNNING; //TODO return finsihed status when no blocks left to place
+        return Status.RUNNING;
     }
 
     public void loadSchematic(String schematicName) {
+        if (!schematicName.endsWith(".nbt")) schematicName += ".nbt";
         plan = PlacerBuildingPlan.fromSchematicName(schematicName);
         this.schematicName = schematicName;
         running = false;

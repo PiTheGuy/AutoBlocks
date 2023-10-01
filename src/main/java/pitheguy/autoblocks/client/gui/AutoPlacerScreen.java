@@ -75,7 +75,7 @@ public class AutoPlacerScreen extends AbstractContainerScreen<AutoPlacerMenu> {
     class LoadButton extends AbstractButton {
 
         public LoadButton() {
-            super(leftPos + 7, topPos + 108, 54, 16, Component.literal("Load"));
+            super(leftPos + 7, topPos + 108, 54, 16, Component.translatable("gui.auto_placer.load"));
         }
 
         @Override
@@ -94,7 +94,7 @@ public class AutoPlacerScreen extends AbstractContainerScreen<AutoPlacerMenu> {
 
     class StartButton extends AbstractButton {
         public StartButton() {
-            super(leftPos + 61, topPos + 108, 54, 16, Component.literal("Start"));
+            super(leftPos + 61, topPos + 108, 54, 16, Component.translatable("gui.auto_placer.start"));
         }
 
         @Override
@@ -112,12 +112,12 @@ public class AutoPlacerScreen extends AbstractContainerScreen<AutoPlacerMenu> {
     class MaterialsButton extends AbstractButton {
 
         public MaterialsButton() {
-            super(leftPos + 115, topPos + 108, 54, 16, Component.literal("Materials"));
+            super(leftPos + 115, topPos + 108, 54, 16, Component.translatable("gui.auto_placer.materials"));
         }
 
         @Override
         public void onPress() {
-            //TODO add materials logic
+            minecraft.setScreen(new MaterialsScreen(menu.tileEntity));
         }
 
         @Override

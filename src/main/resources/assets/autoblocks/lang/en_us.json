@@ -20,5 +20,8 @@
   "container.autoblocks.status.inventory_full": "Inventory Full",
   "container.autoblocks.status.not_enough_materials": "Not Enough Materials",
   "gui.schematic_creator.title": "Enter schematic name",
-  "gui.schematic_creator.save": "Save"
+  "gui.schematic_creator.save": "Save",
+  "gui.auto_placer.load": "Load",
+  "gui.auto_placer.start": "Start",
+  "gui.auto_placer.materials": "Materials"
 }
