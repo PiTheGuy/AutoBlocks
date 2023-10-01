@@ -188,7 +188,7 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
             ItemEntity itemEntity = new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), item);
             level.addFreshEntity(itemEntity);
         });
-        this.fuelSource.removeFuelConsumption(this.currentFuelConsumption);
+        if (fuelSource != null) this.fuelSource.removeFuelConsumption(this.currentFuelConsumption);
     }
 
     protected void advanceToNextPosition() {

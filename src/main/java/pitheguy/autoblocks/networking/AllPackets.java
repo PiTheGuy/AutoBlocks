@@ -20,6 +20,8 @@ public class AllPackets {
     public static void registerPackets() {
         new PacketType<>(StartPlacerPacket.class, buffer -> new StartPlacerPacket()).register();
         new PacketType<>(LoadSchematicPacket.class, LoadSchematicPacket::new).register();
+        new PacketType<>(GetRemainingMaterialsPacket.class, GetRemainingMaterialsPacket::new).register();
+        new PacketType<>(RemainingMaterialsResponsePacket.class, RemainingMaterialsResponsePacket::new).register();
     }
 
     private static class PacketType<T extends SimplePacketBase> {
@@ -44,5 +46,4 @@ public class AllPackets {
             CHANNEL.registerMessage(index++, type, encoder, decoder, handler);
         }
     }
-
 }
