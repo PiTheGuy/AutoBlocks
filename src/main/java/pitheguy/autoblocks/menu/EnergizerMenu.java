@@ -11,6 +11,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import pitheguy.autoblocks.AllBlocks;
 import pitheguy.autoblocks.blockentity.EnergizerBlockEntity;
+import pitheguy.autoblocks.menu.itemhandlers.MultiItemSlotItemHandler;
 import pitheguy.autoblocks.menu.itemhandlers.SingleItemSlotItemHandler;
 import pitheguy.autoblocks.init.ModMenuTypes;
 import pitheguy.autoblocks.util.FunctionalIntDataSlot;
@@ -31,7 +32,7 @@ public class EnergizerMenu extends AbstractContainerMenu {
         final int slotSizePlus2 = 18;
         final int startX = 8;
         //Energizer Inventory
-        this.addSlot(new SingleItemSlotItemHandler(tile.getInventory(), 0, 8, 18, Items.REDSTONE));
+        this.addSlot(new MultiItemSlotItemHandler(tile.getInventory(), 0, 8, 18, EnergizerBlockEntity.FUEL_BY_ITEM.keySet()));
         this.addDataSlot(fuel = new FunctionalIntDataSlot(() -> (int) this.tileEntity.fuel,
                 value -> this.tileEntity.fuel = value));
         //Hotbar
