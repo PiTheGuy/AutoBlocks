@@ -150,15 +150,19 @@ public class AutoPlacerBlockEntity extends AutoBlockEntity {
     public double getProgress() {
         if (plan == null) return 0.0;
         int blocksCorrect = 0;
+        int totalBlocks = 0;
         int sizeX = plan.getSize().getX();
         int sizeY = plan.getSize().getY();
         int sizeZ = plan.getSize().getZ();
-        int totalBlocks = sizeX * sizeY * sizeZ;
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
                 for (int z = 0; z < sizeZ; z++) {
-                    if (blockStatesAreEqual(level.getBlockState(this.getBlockPos().offset(x, y + 1, z)),plan.getBlock(x, y, z)))
-                        blocksCorrect++;
+
+                    BlockState currentBlock = level.getBlockState(this.getBlockPos().offset(x, y + 1, z));
+                    BlockState correctBlock = plan.getBlock(x, y, z);
+                    if (currentBlock.isAir() && correctBlock == null) continue;
+                    if (blockStatesAreEqual(currentBlock, correctBlock)) blocksCorrect++;
+                    totalBlocks++;
                 }
             }
         }
@@ -166,8 +170,7 @@ public class AutoPlacerBlockEntity extends AutoBlockEntity {
     }
 
     private static boolean blockStatesAreEqual(BlockState first, BlockState second) {
-        if (first.isAir() && second == null) return true;
-        else if (second == null) return false;
+        if (second == null) return false;
         if (first.equals(second)) return true;
         return first.isAir() && second.isAir();
     }
