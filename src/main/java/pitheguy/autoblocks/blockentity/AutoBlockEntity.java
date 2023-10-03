@@ -1,5 +1,6 @@
 package pitheguy.autoblocks.blockentity;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -15,6 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.slf4j.Logger;
 import pitheguy.autoblocks.*;
 import pitheguy.autoblocks.util.ModItemHandler;
 
@@ -22,6 +24,8 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 public abstract class AutoBlockEntity extends BlockEntity implements MenuProvider {
+    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final int BASE_FUEL_PER_ACTION = 60;
     protected final ModItemHandler inventory;
     private final int baseRange;
     private final int rangeIncreaseWithUpgrade;
@@ -128,12 +132,12 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
         return range;
     }
 
-    public double getFuelConsumption() {
-        double fuelConsumption = 1;
-        if (getUpgrade1().is(AllItems.ENERGY_UPGRADE.get())) fuelConsumption /= 2;
-        if (getUpgrade2().is(AllItems.ENERGY_UPGRADE.get())) fuelConsumption /= 2;
-        if (getUpgrade3().is(AllItems.ENERGY_UPGRADE.get())) fuelConsumption /= 2;
-        return fuelConsumption;
+    public double getFuelPerAction() {
+        double fuelPerAction = BASE_FUEL_PER_ACTION;
+        if (getUpgrade1().is(AllItems.ENERGY_UPGRADE.get())) fuelPerAction /= 2;
+        if (getUpgrade2().is(AllItems.ENERGY_UPGRADE.get())) fuelPerAction /= 2;
+        if (getUpgrade3().is(AllItems.ENERGY_UPGRADE.get())) fuelPerAction /= 2;
+        return fuelPerAction;
     }
 
     protected void findFuelSource() {
@@ -146,17 +150,13 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
                     double distance = x * x + y * y + z * z;
                     if (this.getLevel().getBlockState(this.worldPosition.offset(x, y, z)).getBlock() == AllBlocks.ENERGIZER.get() && distance < minDistance) {
                         EnergizerBlockEntity energizer = (EnergizerBlockEntity) this.getLevel().getBlockEntity(this.worldPosition.offset(x, y, z));
-                        if (energizer.hasFuel()) {
+                        if (energizer.hasFuel(getFuelPerAction())) {
                             this.fuelSource = energizer;
                             minDistance = distance;
                         }
                     }
                 }
             }
-        }
-        if (fuelSource != oldFuelSource) {
-            if (oldFuelSource != null) oldFuelSource.removeFuelConsumption(currentFuelConsumption);
-            if (fuelSource != null) fuelSource.addFuelConsumption(currentFuelConsumption);
         }
     }
 
@@ -167,12 +167,6 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
 
     public void tick() {
         if (getStatus().isRunning()) {
-            double fuelConsumption = getFuelConsumption();
-            if (currentFuelConsumption != fuelConsumption) {
-                fuelSource.removeFuelConsumption(currentFuelConsumption);
-                fuelSource.addFuelConsumption(fuelConsumption);
-                currentFuelConsumption = fuelConsumption;
-            }
             if (cooldown > 0) cooldown--;
             else {
                 BlockPos currentPos = this.getBlockPos().offset(offsetX, offsetY, offsetZ);
@@ -185,12 +179,11 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
                 }
                 cooldown = getCooldown();
                 runAction();
+                if (fuelSource != null) fuelSource.useFuel(getFuelPerAction());
+                else LOGGER.warn("Unable to take fuel because fuelSource is null");
                 advanceToNextPosition();
             }
 
-        } else if (fuelSource != null) {
-            fuelSource.removeFuelConsumption(currentFuelConsumption);
-            fuelSource = null;
         }
         update();
     }
@@ -200,7 +193,6 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
             ItemEntity itemEntity = new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), item);
             level.addFreshEntity(itemEntity);
         });
-        if (fuelSource != null) this.fuelSource.removeFuelConsumption(this.currentFuelConsumption);
     }
 
     protected BlockPos getRunningPosition() {
@@ -237,7 +229,7 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
             ItemStack stack = this.inventory.getStackInSlot(i);
             if (stack.isEmpty()) continue;
             if (predicate.test(stack.getItem())) {
-                this.inventory.decrStackSize(i, 1);
+                this.inventory.decrStackSize(i, BASE_FUEL_PER_ACTION);
                 return;
             }
         }
@@ -269,7 +261,7 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
             if (offsetZ > range) {
                 offsetZ = -range;
                 offsetY += actionArea.getDirection();
-                if (offsetY > range + 1 || offsetY < range - 1) offsetY = actionArea.getDirection();
+                if (offsetY > range + BASE_FUEL_PER_ACTION || offsetY < range - BASE_FUEL_PER_ACTION) offsetY = actionArea.getDirection();
             }
         }
     }
@@ -310,8 +302,8 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
     }
 
     public enum ActionArea {
-        ABOVE(1),
-        BELOW(-1);
+        ABOVE(BASE_FUEL_PER_ACTION),
+        BELOW(-BASE_FUEL_PER_ACTION);
         private final int direction;
 
         ActionArea(int direction) {

@@ -33,8 +33,8 @@ public class EnergizerBlockEntity extends BlockEntity implements MenuProvider, W
     });
 
     private final ModItemHandler inventory;
+    public double fuelO = 0;
     public double fuel = 0;
-    public double fuelConsumption = 0;
 
     public EnergizerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocKEntityTypes.ENERGIZER.get(), pos, state);
@@ -62,7 +62,6 @@ public class EnergizerBlockEntity extends BlockEntity implements MenuProvider, W
         super.saveAdditional(tag);
         ContainerHelper.saveAllItems(tag, inventory.toNonNullList());
         tag.putDouble("Fuel", fuel);
-        tag.putDouble("FuelConsumption", fuelConsumption);
     }
 
     @Override
@@ -72,7 +71,7 @@ public class EnergizerBlockEntity extends BlockEntity implements MenuProvider, W
         ContainerHelper.loadAllItems(tag, inv);
         this.inventory.setNonNullList(inv);
         this.fuel = tag.getDouble("Fuel");
-        this.fuelConsumption = tag.getDouble("FuelConsumption");
+        this.fuelO = fuel;
     }
 
     public Component getName() {
@@ -104,28 +103,21 @@ public class EnergizerBlockEntity extends BlockEntity implements MenuProvider, W
                 inventory.decrStackSize(0, 1);
                 dirty = true;
             }
-            if (hasFuel() && fuelConsumption > 0) {
-                fuel -= fuelConsumption;
-                dirty = true;
-            }
+        }
+        if (fuelO != fuel) {
+            dirty = true;
+            fuelO = fuel;
         }
         if (dirty) this.update();
     }
 
-    public boolean hasFuel() {
-        return fuel > fuelConsumption;
+    public boolean hasFuel(double amount) {
+        return fuel > amount;
     }
 
-    public void addFuelConsumption(double amount) {
-        fuelConsumption += amount;
-    }
-
-    public void removeFuelConsumption(double amount) {
-        if (fuelConsumption >= amount) fuelConsumption -= amount;
-        else {
-            LOGGER.error("Tried to remove more fuel consumption than was registered");
-            throw new IllegalStateException("Tried to remove more fuel consumption than was registered");
-        }
+    public void useFuel(double amount) {
+        if (fuel > amount) fuel -= amount;
+        else LOGGER.warn("Tried to use more fuel than available");
     }
 
 
@@ -147,7 +139,7 @@ public class EnergizerBlockEntity extends BlockEntity implements MenuProvider, W
 
     @Override
     public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction direction) {
-        return stack.is(Items.REDSTONE);
+        return FUEL_BY_ITEM.keySet().stream().anyMatch(stack::is);
     }
 
     @Override
