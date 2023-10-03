@@ -26,17 +26,18 @@ public class AutoFarmerMenu extends AutoBlockMenu {
         this.tileEntity = tile;
         final int slotSizePlus2 = 18;
         final int startX = 8;
-        //Miner Inventory
+        //Farmer Inventory
         this.addSlot(new HoeSlotItemHandler(tile.getInventory(), 0, 177, 18));
-        this.addSlot(new UpgradeSlotItemHandler(tile.getInventory(), 1, 177, 90));
-        this.addSlot(new UpgradeSlotItemHandler(tile.getInventory(), 2, 177, 108));
+        this.addSlot(new UpgradeSlotItemHandler(tile.getInventory(), 1, 177, 72));
+        this.addSlot(new UpgradeSlotItemHandler(tile.getInventory(), 2, 177, 90));
+        this.addSlot(new UpgradeSlotItemHandler(tile.getInventory(), 3, 177, 108));
         this.addDataSlot(cooldown = new FunctionalIntDataSlot(() -> this.tileEntity.cooldown,
                 value -> this.tileEntity.cooldown = value));
 
         int inventoryStartY = 18;
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 9; col++) {
-                this.addSlot(new ExcludeUpgradesSlotItemHandler(tile.getInventory(), 3+(row*9)+col, startX + (col * slotSizePlus2), inventoryStartY + (row * slotSizePlus2)));
+                this.addSlot(new ExcludeUpgradesSlotItemHandler(tile.getInventory(), 4+(row*9)+col, startX + (col * slotSizePlus2), inventoryStartY + (row * slotSizePlus2)));
             }
         }
 

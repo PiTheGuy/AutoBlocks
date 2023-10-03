@@ -11,7 +11,7 @@ import pitheguy.autoblocks.AutoBlocks;
 import pitheguy.autoblocks.menu.AbstractMinerMenu;
 
 public class AbstractMinerScreen<M extends AbstractMinerMenu> extends AbstractContainerScreen<M> {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(AutoBlocks.MODID, "textures/gui/auto_block.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(AutoBlocks.MODID, "textures/gui/auto_miner.png");
 
     public AbstractMinerScreen(M menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);

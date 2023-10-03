@@ -19,7 +19,7 @@ import java.util.List;
 
 public class AutoFarmerBlockEntity extends AutoBlockEntity {
     public AutoFarmerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlocKEntityTypes.AUTO_FARMER.get(), pos, state, 57, 10, 2, ActionArea.BELOW);
+        super(ModBlocKEntityTypes.AUTO_FARMER.get(), pos, state, 58, 10, 2, ActionArea.BELOW);
     }
 
     @Override
@@ -35,6 +35,11 @@ public class AutoFarmerBlockEntity extends AutoBlockEntity {
     @Override
     public ItemStack getUpgrade2() {
         return this.inventory.getStackInSlot(2);
+    }
+
+    @Override
+    public ItemStack getUpgrade3() {
+        return this.inventory.getStackInSlot(3);
     }
 
     @Override
@@ -69,6 +74,25 @@ public class AutoFarmerBlockEntity extends AutoBlockEntity {
     private boolean canTillBlock(BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         return (state.is(Blocks.DIRT) || state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.DIRT_PATH)) && level.getBlockState(pos.above()).isAir();
+    }
+
+    protected void advanceToNextPosition() {
+        int range = getRange();
+        offsetX++;
+        if (offsetX > range) {
+            offsetX = -range;
+            offsetZ++;
+            if (offsetZ > range) {
+                offsetZ = -range;
+                offsetY += actionArea.getDirection();
+                if (offsetY > range + 1 || offsetY < range - 1) offsetY = 0;
+            }
+        }
+    }
+
+    @Override
+    public int getMaxBlocksPerTick() {
+        return super.getMaxBlocksPerTick() * 10;
     }
 
     private static boolean isSeedItem(Item item) {

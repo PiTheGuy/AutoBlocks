@@ -33,8 +33,8 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
     public double currentFuelConsumption = 0;
     protected EnergizerBlockEntity oldFuelSource = null;
     public EnergizerBlockEntity fuelSource = null;
-    protected int mainInventoryStartSlot = 3;
-    protected int mainInventoryEndSlot = 57;
+    protected int mainInventoryStartSlot = 4;
+    protected int mainInventoryEndSlot = 58;
 
 
     public AutoBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int inventorySize, int baseRange, int rangeIncreaseWithUpgrade, ActionArea actionArea) {
@@ -96,6 +96,8 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
 
     public abstract ItemStack getUpgrade2();
 
+    public abstract ItemStack getUpgrade3();
+
     public abstract void runAction();
 
     public abstract boolean canRunAtPosition(BlockPos pos);
@@ -106,6 +108,7 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
         int cooldown = Config.baseCooldown;
         if (getUpgrade1().is(AllItems.SPEED_UPGRADE.get())) cooldown /= 2;
         if (getUpgrade2().is(AllItems.SPEED_UPGRADE.get())) cooldown /= 2;
+        if (getUpgrade3().is(AllItems.SPEED_UPGRADE.get())) cooldown /= 2;
         return cooldown;
     }
 
@@ -113,6 +116,7 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
         int maxBlocksPerTick = Config.maxBlocksPerTick;
         if (getUpgrade1().is(AllItems.SPEED_UPGRADE.get())) maxBlocksPerTick *= 2;
         if (getUpgrade2().is(AllItems.SPEED_UPGRADE.get())) maxBlocksPerTick *= 2;
+        if (getUpgrade3().is(AllItems.SPEED_UPGRADE.get())) maxBlocksPerTick *= 2;
         return maxBlocksPerTick;
     }
 
@@ -120,6 +124,7 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
         int range = baseRange;
         if (getUpgrade1().is(AllItems.RANGE_UPGRADE.get())) range += rangeIncreaseWithUpgrade;
         if (getUpgrade2().is(AllItems.RANGE_UPGRADE.get())) range += rangeIncreaseWithUpgrade;
+        if (getUpgrade3().is(AllItems.RANGE_UPGRADE.get())) range += rangeIncreaseWithUpgrade;
         return range;
     }
 
@@ -127,6 +132,7 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
         double fuelConsumption = 1;
         if (getUpgrade1().is(AllItems.ENERGY_UPGRADE.get())) fuelConsumption /= 2;
         if (getUpgrade2().is(AllItems.ENERGY_UPGRADE.get())) fuelConsumption /= 2;
+        if (getUpgrade3().is(AllItems.ENERGY_UPGRADE.get())) fuelConsumption /= 2;
         return fuelConsumption;
     }
 
@@ -263,7 +269,7 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
             if (offsetZ > range) {
                 offsetZ = -range;
                 offsetY += actionArea.getDirection();
-                if (offsetY > range + 1) offsetY = actionArea.getDirection();
+                if (offsetY > range + 1 || offsetY < range - 1) offsetY = actionArea.getDirection();
             }
         }
     }

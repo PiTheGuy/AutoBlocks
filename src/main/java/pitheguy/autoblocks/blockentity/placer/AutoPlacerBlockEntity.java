@@ -28,7 +28,7 @@ public class AutoPlacerBlockEntity extends AutoBlockEntity {
     private String schematicName = "";
 
     public AutoPlacerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlocKEntityTypes.AUTO_PLACER.get(), pos, state, 38, 20, 0, ActionArea.ABOVE);
+        super(ModBlocKEntityTypes.AUTO_PLACER.get(), pos, state, 39, 20, 0, ActionArea.ABOVE);
         this.mainInventoryStartSlot = 2;
         this.mainInventoryEndSlot = 38;
 
@@ -47,6 +47,11 @@ public class AutoPlacerBlockEntity extends AutoBlockEntity {
     @Override
     public ItemStack getUpgrade2() {
         return this.inventory.getStackInSlot(1);
+    }
+
+    @Override
+    public ItemStack getUpgrade3() {
+        return this.inventory.getStackInSlot(2);
     }
 
     @Override

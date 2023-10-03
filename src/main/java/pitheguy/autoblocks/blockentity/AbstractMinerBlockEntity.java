@@ -24,7 +24,7 @@ public abstract class AbstractMinerBlockEntity extends AutoBlockEntity implement
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public AbstractMinerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int baseRange, int rangeIncreaseWithUpgrade, ActionArea actionArea) {
-        super(type, pos, state, 57, baseRange, rangeIncreaseWithUpgrade, actionArea);
+        super(type, pos, state, 58, baseRange, rangeIncreaseWithUpgrade, actionArea);
     }
 
     @Override
@@ -45,6 +45,11 @@ public abstract class AbstractMinerBlockEntity extends AutoBlockEntity implement
     @Override
     public ItemStack getUpgrade2() {
         return this.inventory.getStackInSlot(2);
+    }
+
+    @Override
+    public ItemStack getUpgrade3() {
+        return this.inventory.getStackInSlot(3);
     }
 
     @Override
