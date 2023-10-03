@@ -17,14 +17,14 @@ import pitheguy.autoblocks.util.FunctionalIntDataSlot;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public class AutoPlacerMenu extends AbstractContainerMenu {
+public class AutoPlacerMenu extends AutoBlockMenu {
     public AutoPlacerBlockEntity tileEntity;
     protected final ContainerLevelAccess canInteractWithCallable;
     public FunctionalIntDataSlot cooldown;
 
     //Server constructor
-    public AutoPlacerMenu(final int windowID, final Inventory playerInv, final AutoPlacerBlockEntity tile) {
-        super(ModMenuTypes.AUTO_PLACER.get(), windowID);
+    public AutoPlacerMenu(final int windowId, final Inventory playerInv, final AutoPlacerBlockEntity tile) {
+        super(ModMenuTypes.AUTO_PLACER.get(), windowId);
         this.canInteractWithCallable = ContainerLevelAccess.create(tile.getLevel(), tile.getBlockPos());
         this.tileEntity = tile;
         final int slotSizePlus2 = 18;
@@ -72,44 +72,10 @@ public class AutoPlacerMenu extends AbstractContainerMenu {
         throw new IllegalStateException("TileEntity is not correct " + tileAtPos);
     }
 
-    @Nonnull
-    @Override
-    public ItemStack quickMoveStack(final Player player, final int index) {
-        ItemStack returnStack = ItemStack.EMPTY;
-        final Slot slot = this.slots.get(index);
-        if (slot != null && slot.hasItem()) {
-            final ItemStack slotStack = slot.getItem();
-            returnStack = slotStack.copy();
 
-            final int containerSlots = this.slots.size() - player.getInventory().items.size();
-            if (index < containerSlots) {
-                if (!moveItemStackTo(slotStack, containerSlots, this.slots.size(), true)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (!moveItemStackTo(slotStack, 0, containerSlots, false)) {
-                return ItemStack.EMPTY;
-            }
-            if (slotStack.getCount() == 0) {
-                slot.set(ItemStack.EMPTY);
-            } else {
-                slot.setChanged();
-            }
-            if (slotStack.getCount() == returnStack.getCount()) {
-                return ItemStack.EMPTY;
-            }
-            slot.onTake(player, slotStack);
-        }
-        return returnStack;
-    }
 
     @Override
     public boolean stillValid(Player player) {
         return stillValid(canInteractWithCallable, player, AllBlocks.AUTO_PLACER.get());
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public int getCooldownScaled() {
-        int timeOnCooldown = this.tileEntity.getCooldown() - this.cooldown.get();
-        return timeOnCooldown != 0 ? timeOnCooldown * 70 / this.tileEntity.getCooldown() : 0;
     }
 }

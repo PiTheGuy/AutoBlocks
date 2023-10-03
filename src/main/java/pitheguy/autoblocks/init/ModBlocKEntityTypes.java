@@ -14,4 +14,5 @@ public class ModBlocKEntityTypes {
     public static final RegistryObject<BlockEntityType<AutoMinerBlockEntity>> AUTO_MINER = BLOCK_ENTITY_TYPES.register("auto_miner", () -> BlockEntityType.Builder.of(AutoMinerBlockEntity::new, AllBlocks.AUTO_MINER.get()).build(null));
     public static final RegistryObject<BlockEntityType<AutoLoggerBlockEntity>> AUTO_LOGGER = BLOCK_ENTITY_TYPES.register("auto_logger", () -> BlockEntityType.Builder.of(AutoLoggerBlockEntity::new, AllBlocks.AUTO_LOGGER.get()).build(null));
     public static final RegistryObject<BlockEntityType<AutoPlacerBlockEntity>> AUTO_PLACER = BLOCK_ENTITY_TYPES.register("auto_placer", () -> BlockEntityType.Builder.of(AutoPlacerBlockEntity::new, AllBlocks.AUTO_PLACER.get()).build(null));
+    public static final RegistryObject<BlockEntityType<AutoFarmerBlockEntity>> AUTO_FARMER = BLOCK_ENTITY_TYPES.register("auto_farmer", () -> BlockEntityType.Builder.of(AutoFarmerBlockEntity::new, AllBlocks.AUTO_FARMER.get()).build(null));
 }

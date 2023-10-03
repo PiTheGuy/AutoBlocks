@@ -13,4 +13,5 @@ public class ModMenuTypes {
     public static final RegistryObject<MenuType<AutoMinerMenu>> AUTO_MINER = MENU_TYPES.register("auto_miner", () -> IForgeMenuType.create(AutoMinerMenu::new));
     public static final RegistryObject<MenuType<AutoLoggerMenu>> AUTO_LOGGER = MENU_TYPES.register("auto_logger", () -> IForgeMenuType.create(AutoLoggerMenu::new));
     public static final RegistryObject<MenuType<AutoPlacerMenu>> AUTO_PLACER = MENU_TYPES.register("auto_placer", () -> IForgeMenuType.create(AutoPlacerMenu::new));
+    public static final RegistryObject<MenuType<AutoFarmerMenu>> AUTO_FARMER = MENU_TYPES.register("auto_farmer", () -> IForgeMenuType.create(AutoFarmerMenu::new));
 }

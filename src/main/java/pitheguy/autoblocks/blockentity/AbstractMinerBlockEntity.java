@@ -50,10 +50,28 @@ public abstract class AbstractMinerBlockEntity extends AutoBlockEntity implement
     @Override
     public void runAction() {
         if (level != null && !level.isClientSide) {
-            BlockPos minePos = this.getBlockPos().offset(offsetX, offsetY, offsetZ);
+            BlockPos minePos = getRunningPosition();
             List<ItemStack> drops = Block.getDrops(level.getBlockState(minePos), (ServerLevel) level, minePos, null);
             drops.stream().filter(drop -> !drop.isEmpty()).forEach(this::addItemToInventory);
             level.destroyBlock(minePos, false);
+        }
+    }
+
+    protected void advanceToNextPosition() {
+        int range = getRange();
+        offsetX++;
+        if (offsetX > range) {
+            offsetX = -range;
+            offsetZ++;
+            if (offsetZ > range) {
+                offsetZ = -range;
+                offsetY += actionArea.getDirection();
+                if (offsetY < level.getMinBuildHeight() || offsetY > level.getMaxBuildHeight()) {
+                    offsetX = -range;
+                    offsetY = actionArea.getDirection();
+                    offsetZ = -range;
+                }
+            }
         }
     }
 
@@ -63,26 +81,6 @@ public abstract class AbstractMinerBlockEntity extends AutoBlockEntity implement
         if (!FilterItem.hasFilterBlock(filterStack)) return true;
         Block filterBlock = FilterItem.getFilterBlock(filterStack);
         return block == filterBlock;
-    }
-
-    protected void addItemToInventory(ItemStack itemStack) {
-        if (!this.canAddItem(itemStack)) return;
-        for (int i = 3; i < 57; i++) {
-            itemStack = this.inventory.insertItem(i, itemStack, false);
-            if (itemStack.isEmpty()) break;
-        }
-    }
-
-    protected boolean canAddItem(ItemStack stack) {
-        if (this.hasInventorySpace()) return true;
-        int count = stack.getCount();
-        for (int i = 3; i < 57; i++) {
-            if (this.inventory.getStackInSlot(i).getItem() == stack.getItem()) {
-                count -= 64 - this.inventory.getStackInSlot(i).getCount();
-                if (count <= 0) return true;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -113,9 +111,5 @@ public abstract class AbstractMinerBlockEntity extends AutoBlockEntity implement
         findFuelSource();
         if (fuelSource == null) return Status.NOT_ENOUGH_FUEL;
         return Status.RUNNING;
-    }
-
-    protected boolean hasInventorySpace() {
-        return IntStream.range(0, 36).anyMatch(i -> this.inventory.getStackInSlot(i).isEmpty());
     }
 }

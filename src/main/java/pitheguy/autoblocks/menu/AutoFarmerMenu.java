@@ -3,34 +3,31 @@ package pitheguy.autoblocks.menu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import pitheguy.autoblocks.AllBlocks;
-import pitheguy.autoblocks.blockentity.AbstractMinerBlockEntity;
+import pitheguy.autoblocks.blockentity.AutoFarmerBlockEntity;
+import pitheguy.autoblocks.init.ModMenuTypes;
 import pitheguy.autoblocks.menu.itemhandlers.*;
 import pitheguy.autoblocks.util.FunctionalIntDataSlot;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public abstract class AbstractMinerMenu extends AutoBlockMenu {
-    public AbstractMinerBlockEntity tileEntity;
+public class AutoFarmerMenu extends AutoBlockMenu {
+    public AutoFarmerBlockEntity tileEntity;
     protected final ContainerLevelAccess canInteractWithCallable;
     public FunctionalIntDataSlot cooldown;
 
     //Server constructor
-    public AbstractMinerMenu(final int windowId, final Inventory playerInv, final AbstractMinerBlockEntity tile, MenuType<?> menuType) {
-        super(menuType, windowId);
+    public AutoFarmerMenu(final int windowId, final Inventory playerInv, final AutoFarmerBlockEntity tile) {
+        super(ModMenuTypes.AUTO_FARMER.get(), windowId);
         this.canInteractWithCallable = ContainerLevelAccess.create(tile.getLevel(), tile.getBlockPos());
         this.tileEntity = tile;
         final int slotSizePlus2 = 18;
         final int startX = 8;
         //Miner Inventory
-        this.addSlot(new FilterSlotItemHandler(tile.getInventory(), 0, 177, 18));
+        this.addSlot(new HoeSlotItemHandler(tile.getInventory(), 0, 177, 18));
         this.addSlot(new UpgradeSlotItemHandler(tile.getInventory(), 1, 177, 90));
         this.addSlot(new UpgradeSlotItemHandler(tile.getInventory(), 2, 177, 108));
         this.addDataSlot(cooldown = new FunctionalIntDataSlot(() -> this.tileEntity.cooldown,
@@ -39,9 +36,10 @@ public abstract class AbstractMinerMenu extends AutoBlockMenu {
         int inventoryStartY = 18;
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 9; col++) {
-                this.addSlot(new OutputSlotItemHandler(tile.getInventory(), 3+(row*9)+col, startX + (col * slotSizePlus2), inventoryStartY + (row * slotSizePlus2)));
+                this.addSlot(new ExcludeUpgradesSlotItemHandler(tile.getInventory(), 3+(row*9)+col, startX + (col * slotSizePlus2), inventoryStartY + (row * slotSizePlus2)));
             }
         }
+
 
         //Hotbar
         int hotbarY = 198;
@@ -57,20 +55,24 @@ public abstract class AbstractMinerMenu extends AutoBlockMenu {
         }
 
     }
-
     //Client constructor
-    public AbstractMinerMenu(final int windowID, final Inventory playerInv, final FriendlyByteBuf data, MenuType<?> menuType) {
-        this(windowID, playerInv, getTileEntity(playerInv, data), menuType);
+    public AutoFarmerMenu(final int windowID, final Inventory playerInv, final FriendlyByteBuf data) {
+        this(windowID, playerInv, getTileEntity(playerInv, data));
     }
 
-    private static AbstractMinerBlockEntity getTileEntity(final Inventory playerInv, final FriendlyByteBuf data) {
+    private static AutoFarmerBlockEntity getTileEntity(final Inventory playerInv, final FriendlyByteBuf data) {
         Objects.requireNonNull(playerInv, "playerInv cannot be null");
         Objects.requireNonNull(data, "data cannot be null");
         final BlockEntity tileAtPos = playerInv.player.level().getBlockEntity(data.readBlockPos());
-        if (tileAtPos instanceof AbstractMinerBlockEntity miner) {
-            return miner;
+        if (tileAtPos instanceof AutoFarmerBlockEntity farmer) {
+            return farmer;
         }
         throw new IllegalStateException("TileEntity is not correct " + tileAtPos);
+    }
+
+    @Override
+    public boolean stillValid(Player player) {
+        return stillValid(canInteractWithCallable, player, AllBlocks.AUTO_FARMER.get());
     }
 
     public int getCooldownScaled() {

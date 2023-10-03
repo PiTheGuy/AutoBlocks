@@ -9,6 +9,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -16,6 +17,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import pitheguy.autoblocks.*;
 import pitheguy.autoblocks.util.ModItemHandler;
+
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 public abstract class AutoBlockEntity extends BlockEntity implements MenuProvider {
     protected final ModItemHandler inventory;
@@ -29,6 +33,8 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
     public double currentFuelConsumption = 0;
     protected EnergizerBlockEntity oldFuelSource = null;
     public EnergizerBlockEntity fuelSource = null;
+    protected int mainInventoryStartSlot = 3;
+    protected int mainInventoryEndSlot = 57;
 
 
     public AutoBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int inventorySize, int baseRange, int rangeIncreaseWithUpgrade, ActionArea actionArea) {
@@ -191,6 +197,63 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
         if (fuelSource != null) this.fuelSource.removeFuelConsumption(this.currentFuelConsumption);
     }
 
+    protected BlockPos getRunningPosition() {
+        return this.getBlockPos().offset(offsetX, offsetY, offsetZ);
+    }
+
+    protected void addItemToInventory(ItemStack itemStack) {
+        if (!this.canAddItem(itemStack)) return;
+        for (int i = mainInventoryStartSlot; i < mainInventoryEndSlot; i++) {
+            itemStack = this.inventory.insertItem(i, itemStack, false);
+            if (itemStack.isEmpty()) break;
+        }
+    }
+
+    protected boolean canAddItem(ItemStack stack) {
+        if (this.hasInventorySpace()) return true;
+        int count = stack.getCount();
+        for (int i = mainInventoryStartSlot; i < mainInventoryEndSlot; i++) {
+            if (this.inventory.getStackInSlot(i).getItem() == stack.getItem()) {
+                count -= 64 - this.inventory.getStackInSlot(i).getCount();
+                if (count <= 0) return true;
+            }
+        }
+        return false;
+    }
+
+    protected boolean hasInventorySpace() {
+        return IntStream.range(mainInventoryStartSlot, mainInventoryEndSlot).anyMatch(i -> this.inventory.getStackInSlot(i).isEmpty());
+    }
+
+
+    protected void removeItemFromInventory(Predicate<Item> predicate) {
+        for (int i = mainInventoryStartSlot; i < mainInventoryEndSlot; i++) {
+            ItemStack stack = this.inventory.getStackInSlot(i);
+            if (stack.isEmpty()) continue;
+            if (predicate.test(stack.getItem())) {
+                this.inventory.decrStackSize(i, 1);
+                return;
+            }
+        }
+    }
+
+    protected void removeItemFromInventory(Item item) {
+        removeItemFromInventory(slotItem -> item == slotItem);
+    }
+
+    protected boolean hasItemInInventory(Predicate<Item> predicate) {
+        for (int i = mainInventoryStartSlot; i < mainInventoryEndSlot; i++) {
+            ItemStack stack = this.inventory.getStackInSlot(i);
+            if (stack.isEmpty()) continue;
+            if (predicate.test(stack.getItem())) return true;
+        }
+        return false;
+    }
+
+    protected boolean hasItemInInventory(Item item) {
+        return hasItemInInventory(slotItem -> item == slotItem);
+    }
+
     protected void advanceToNextPosition() {
         int range = getRange();
         offsetX++;
@@ -200,11 +263,7 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
             if (offsetZ > range) {
                 offsetZ = -range;
                 offsetY += actionArea.getDirection();
-                if (offsetY < level.getMinBuildHeight() || offsetY > level.getMaxBuildHeight()) {
-                    offsetX = -range;
-                    offsetY = actionArea.getDirection();
-                    offsetZ = -range;
-                }
+                if (offsetY > range + 1) offsetY = actionArea.getDirection();
             }
         }
     }
@@ -224,7 +283,8 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
         FINISHED("finished", false),
         NOT_ENOUGH_FUEL("not_enough_fuel", false),
         INVENTORY_FULL("inventory_full", false),
-        NOT_ENOUGH_MATERIALS("not_enough_materials", false);
+        NOT_ENOUGH_MATERIALS("not_enough_materials", false),
+        MISSING_TOOL("missing_tool", false);
 
         final String id;
         final boolean running;

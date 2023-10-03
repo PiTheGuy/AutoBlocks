@@ -29,6 +29,9 @@ public class AutoPlacerBlockEntity extends AutoBlockEntity {
 
     public AutoPlacerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocKEntityTypes.AUTO_PLACER.get(), pos, state, 38, 20, 0, ActionArea.ABOVE);
+        this.mainInventoryStartSlot = 2;
+        this.mainInventoryEndSlot = 38;
+
     }
 
     @Override
@@ -49,10 +52,10 @@ public class AutoPlacerBlockEntity extends AutoBlockEntity {
     @Override
     public void runAction() {
         if (level != null && !level.isClientSide) {
-            BlockPos placePos = this.getBlockPos().offset(offsetX, offsetY, offsetZ);
+            BlockPos placePos = getRunningPosition();
             BlockState blockToPlace = this.plan.getBlock(offsetX, offsetY - 1, offsetZ);
             level.setBlock(placePos, blockToPlace, Block.UPDATE_ALL);
-            level.playLocalSound(placePos, SoundEvents.STONE_PLACE, SoundSource.BLOCKS, 1, 1, false);
+            level.playSound(null, placePos, SoundEvents.STONE_PLACE, SoundSource.BLOCKS, 1, 1);
             removeItemFromInventory(blockToPlace.getBlock().asItem());
         }
     }
@@ -81,20 +84,6 @@ public class AutoPlacerBlockEntity extends AutoBlockEntity {
             loadSchematic(schem);
         }
         running = plan != null && tag.getBoolean("Running");
-    }
-
-    protected void advanceToNextPosition() {
-        int range = getRange();
-        offsetX++;
-        if (offsetX > range) {
-            offsetX = 0;
-            offsetZ++;
-            if (offsetZ > range) {
-                offsetZ = 0;
-                offsetY += actionArea.getDirection();
-                if (offsetY > range + 1) offsetY = actionArea.getDirection();
-            }
-        }
     }
 
     @Override
@@ -184,26 +173,6 @@ public class AutoPlacerBlockEntity extends AutoBlockEntity {
         offsetY = 1;
         offsetZ = 0;
         running = true;
-    }
-
-    private void removeItemFromInventory(Item item) {
-        for (int i = 2; i < 38; i++) {
-            ItemStack stack = this.inventory.getStackInSlot(i);
-            if (stack.isEmpty()) continue;
-            if (stack.is(item)) {
-                this.inventory.decrStackSize(i, 1);
-                return;
-            }
-        }
-    }
-
-    private boolean hasItemInInventory(Item item) {
-        for (int i = 2; i < 38; i++) {
-            ItemStack stack = this.inventory.getStackInSlot(i);
-            if (stack.isEmpty()) continue;
-            if (stack.is(item)) return true;
-        }
-        return false;
     }
 
     public boolean hasEnoughMaterials() {

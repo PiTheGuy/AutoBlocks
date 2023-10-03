@@ -44,6 +44,7 @@ public class AutoBlocks {
                 output.accept(AllBlocks.AUTO_MINER_BLOCK_ITEM.get());
                 output.accept(AllBlocks.AUTO_LOGGER_BLOCK_ITEM.get());
                 output.accept(AllBlocks.AUTO_PLACER_BLOCK_ITEM.get());
+                output.accept(AllBlocks.AUTO_FARMER_BLOCK_ITEM.get());
                 output.accept(AllItems.FILTER.get());
                 output.accept(AllItems.SCHEMATIC_CREATOR.get());
                 output.accept(AllItems.SPEED_UPGRADE.get());
@@ -107,6 +108,7 @@ public class AutoBlocks {
             MenuScreens.register(ModMenuTypes.AUTO_MINER.get(), AutoMinerScreen::new);
             MenuScreens.register(ModMenuTypes.AUTO_LOGGER.get(), AutoLoggerScreen::new);
             MenuScreens.register(ModMenuTypes.AUTO_PLACER.get(), AutoPlacerScreen::new);
+            MenuScreens.register(ModMenuTypes.AUTO_FARMER.get(), AutoFarmerScreen::new);
         }
     }
 }
