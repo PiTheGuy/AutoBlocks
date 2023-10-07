@@ -2,18 +2,22 @@ package pitheguy.autoblocks.blockentity;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import pitheguy.autoblocks.AllItems;
 import pitheguy.autoblocks.items.FilterItem;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 public abstract class AbstractMinerBlockEntity extends BlockBasedAutoBlockEntity implements MenuProvider {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -111,5 +115,20 @@ public abstract class AbstractMinerBlockEntity extends BlockBasedAutoBlockEntity
         findFuelSource();
         if (fuelSource == null) return Status.NOT_ENOUGH_FUEL;
         return Status.RUNNING;
+    }
+
+    @Override
+    public int[] getSlotsForFace(Direction side) {
+        return IntStream.range(4, 58).toArray();
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction direction) {
+        return false;
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
+        return index >= 4;
     }
 }

@@ -7,9 +7,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.MenuProvider;
+import net.minecraft.world.*;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -23,10 +23,11 @@ import pitheguy.autoblocks.util.ModItemHandler;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
-public abstract class AutoBlockEntity extends BlockEntity implements MenuProvider {
+public abstract class AutoBlockEntity extends BlockEntity implements MenuProvider, WorldlyContainer {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final int BASE_FUEL_PER_ACTION = 60;
     protected final ModItemHandler inventory;
+    protected final int inventorySize;
     private final int baseRange;
     private final int rangeIncreaseWithUpgrade;
     public int cooldown = 0;
@@ -38,6 +39,7 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
     public AutoBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int inventorySize, int baseRange, int rangeIncreaseWithUpgrade) {
         super(type, pos, state);
         this.inventory = new ModItemHandler(inventorySize);
+        this.inventorySize = inventorySize;
         this.baseRange = baseRange;
         this.rangeIncreaseWithUpgrade = rangeIncreaseWithUpgrade;
     }
@@ -225,6 +227,46 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
 
     public ModItemHandler getInventory() {
         return inventory;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return this.inventory.isEmpty();
+    }
+
+    @Override
+    public ItemStack getItem(int slot) {
+        return this.inventory.getStackInSlot(slot);
+    }
+
+    @Override
+    public ItemStack removeItem(int slot, int amount) {
+        return ContainerHelper.removeItem(inventory.toNonNullList(), slot, amount);
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int slot) {
+        return ContainerHelper.takeItem(inventory.toNonNullList(), slot);
+    }
+
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        this.inventory.setStackInSlot(slot, stack);
+    }
+
+    @Override
+    public boolean stillValid(Player player) {
+        return Container.stillValidBlockEntity(this, player);
+    }
+
+    @Override
+    public void clearContent() {
+        this.inventory.clear();
+    }
+
+    @Override
+    public int getContainerSize() {
+        return inventorySize;
     }
 
     public enum Status {

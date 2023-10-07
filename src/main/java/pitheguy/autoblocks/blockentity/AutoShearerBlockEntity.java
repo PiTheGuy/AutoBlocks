@@ -3,6 +3,7 @@ package pitheguy.autoblocks.blockentity;
 import com.google.common.collect.Maps;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -102,5 +103,23 @@ public class AutoShearerBlockEntity extends AutoBlockEntity {
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
         return new AutoShearerMenu(containerId, playerInventory, this);
+    }
+
+    @Override
+    public int[] getSlotsForFace(Direction side) {
+        int[] result = new int[55];
+        result[0] = 0;
+        for (int i = 1; i < 55; i++) result[i] = i + 3;
+        return result;
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction direction) {
+        return index == 0 && stack.getItem() instanceof ShearsItem;
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
+        return index >= 4;
     }
 }
