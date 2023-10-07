@@ -6,7 +6,8 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
 
 public class MultiItemSlotItemHandler extends SlotItemHandler {
     private final Collection<Item> validItems;

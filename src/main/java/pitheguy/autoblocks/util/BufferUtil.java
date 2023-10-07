@@ -4,7 +4,8 @@ import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class BufferUtil {
     public static <K, V> void writeMap(FriendlyByteBuf buffer, Map<K, V> map, Consumer<K> keyEncoder, Consumer<V> valueEncoder) {

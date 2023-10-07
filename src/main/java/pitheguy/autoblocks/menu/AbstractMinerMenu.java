@@ -2,19 +2,12 @@ package pitheguy.autoblocks.menu;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import pitheguy.autoblocks.AllBlocks;
 import pitheguy.autoblocks.blockentity.AbstractMinerBlockEntity;
 import pitheguy.autoblocks.menu.itemhandlers.*;
 import pitheguy.autoblocks.util.FunctionalIntDataSlot;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public abstract class AbstractMinerMenu extends AutoBlockMenu {

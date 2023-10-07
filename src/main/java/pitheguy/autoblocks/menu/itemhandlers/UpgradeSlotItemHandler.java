@@ -5,7 +5,6 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 import pitheguy.autoblocks.AllItems;
-import pitheguy.autoblocks.AllTags;
 
 public class UpgradeSlotItemHandler extends SlotItemHandler {
     public UpgradeSlotItemHandler(IItemHandler itemHandler, int index, int xPosition, int yPosition) {

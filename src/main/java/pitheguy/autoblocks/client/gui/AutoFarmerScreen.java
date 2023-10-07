@@ -9,7 +9,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import pitheguy.autoblocks.AutoBlocks;
 import pitheguy.autoblocks.menu.AutoFarmerMenu;
-import pitheguy.autoblocks.menu.EnergizerMenu;
 
 public class AutoFarmerScreen extends AbstractContainerScreen<AutoFarmerMenu> {
     public static final ResourceLocation TEXTURE = new ResourceLocation(AutoBlocks.MODID, "textures/gui/auto_farmer.png");

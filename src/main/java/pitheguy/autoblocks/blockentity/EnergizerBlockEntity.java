@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import pitheguy.autoblocks.init.ModBlocKEntityTypes;
+import pitheguy.autoblocks.init.ModBlockEntityTypes;
 import pitheguy.autoblocks.menu.EnergizerMenu;
 import pitheguy.autoblocks.util.ModItemHandler;
 
@@ -37,7 +37,7 @@ public class EnergizerBlockEntity extends BlockEntity implements MenuProvider, W
     public double fuel = 0;
 
     public EnergizerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlocKEntityTypes.ENERGIZER.get(), pos, state);
+        super(ModBlockEntityTypes.ENERGIZER.get(), pos, state);
         this.inventory = new ModItemHandler(1);
     }
 

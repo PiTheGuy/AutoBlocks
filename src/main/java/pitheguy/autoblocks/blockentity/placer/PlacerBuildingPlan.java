@@ -3,13 +3,13 @@ package pitheguy.autoblocks.blockentity.placer;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.*;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import pitheguy.autoblocks.util.SchematicHandler;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 
 public class PlacerBuildingPlan {

@@ -5,6 +5,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import pitheguy.autoblocks.AllBlocks;
 import pitheguy.autoblocks.blockentity.AutoFarmerBlockEntity;
@@ -27,7 +28,7 @@ public class AutoFarmerMenu extends AutoBlockMenu {
         final int slotSizePlus2 = 18;
         final int startX = 8;
         //Farmer Inventory
-        this.addSlot(new HoeSlotItemHandler(tile.getInventory(), 0, 177, 18));
+        this.addSlot(new PredicateSlotItemHandler(tile.getInventory(), 0, 177, 18, item -> item instanceof HoeItem));
         this.addSlot(new UpgradeSlotItemHandler(tile.getInventory(), 1, 177, 72));
         this.addSlot(new UpgradeSlotItemHandler(tile.getInventory(), 2, 177, 90));
         this.addSlot(new UpgradeSlotItemHandler(tile.getInventory(), 3, 177, 108));

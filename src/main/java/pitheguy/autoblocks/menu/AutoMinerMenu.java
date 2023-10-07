@@ -3,7 +3,6 @@ package pitheguy.autoblocks.menu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.MenuType;
 import pitheguy.autoblocks.AllBlocks;
 import pitheguy.autoblocks.blockentity.AbstractMinerBlockEntity;
 import pitheguy.autoblocks.init.ModMenuTypes;

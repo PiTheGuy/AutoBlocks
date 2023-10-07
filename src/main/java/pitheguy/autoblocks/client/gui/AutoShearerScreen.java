@@ -8,18 +8,18 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import pitheguy.autoblocks.AutoBlocks;
-import pitheguy.autoblocks.menu.EnergizerMenu;
+import pitheguy.autoblocks.menu.AutoShearerMenu;
 
-public class EnergizerScreen extends AbstractContainerScreen<EnergizerMenu> {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(AutoBlocks.MODID, "textures/gui/energizer.png");
+public class AutoShearerScreen extends AbstractContainerScreen<AutoShearerMenu> {
+    public static final ResourceLocation TEXTURE = new ResourceLocation(AutoBlocks.MODID, "textures/gui/auto_shearer.png");
 
-    public EnergizerScreen(EnergizerMenu menu, Inventory playerInventory, Component title) {
+    public AutoShearerScreen(AutoShearerMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
         this.leftPos = 0;
         this.topPos = 0;
-        this.imageWidth = 176;
-        this.imageHeight = 132;
-        this.inventoryLabelY = 37;
+        this.imageWidth = 200;
+        this.imageHeight = 222;
+        this.inventoryLabelY = 128;
     }
 
 
@@ -30,7 +30,7 @@ public class EnergizerScreen extends AbstractContainerScreen<EnergizerMenu> {
         RenderSystem.setShaderTexture(0, TEXTURE);
         this.minecraft.getTextureManager().bindForSetup(TEXTURE);
         guiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
-        guiGraphics.blit(TEXTURE, this.leftPos + 44, this.topPos + 18, 0, 132,this.menu.getFuelScaled(), 16);
+        guiGraphics.blit(TEXTURE, this.leftPos + 98, this.topPos + 129, 0, 222,this.menu.getCooldownScaled(), 5);
     }
 
     @Override

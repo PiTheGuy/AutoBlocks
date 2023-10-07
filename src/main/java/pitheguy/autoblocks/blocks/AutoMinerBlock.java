@@ -13,7 +13,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 import pitheguy.autoblocks.blockentity.AutoMinerBlockEntity;
-import pitheguy.autoblocks.init.ModBlocKEntityTypes;
+import pitheguy.autoblocks.init.ModBlockEntityTypes;
 
 public class AutoMinerBlock extends BaseEntityBlock {
 
@@ -38,7 +38,7 @@ public class AutoMinerBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : BaseEntityBlock.createTickerHelper(blockEntityType, ModBlocKEntityTypes.AUTO_MINER.get(), ((level1, pos, state1, blockEntity) -> blockEntity.tick()));
+        return level.isClientSide ? null : BaseEntityBlock.createTickerHelper(blockEntityType, ModBlockEntityTypes.AUTO_MINER.get(), ((level1, pos, state1, blockEntity) -> blockEntity.tick()));
     }
 
     @Override

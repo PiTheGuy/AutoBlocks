@@ -5,15 +5,13 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import pitheguy.autoblocks.AllBlocks;
 import pitheguy.autoblocks.blockentity.EnergizerBlockEntity;
-import pitheguy.autoblocks.menu.itemhandlers.MultiItemSlotItemHandler;
-import pitheguy.autoblocks.menu.itemhandlers.SingleItemSlotItemHandler;
 import pitheguy.autoblocks.init.ModMenuTypes;
+import pitheguy.autoblocks.menu.itemhandlers.MultiItemSlotItemHandler;
 import pitheguy.autoblocks.util.FunctionalIntDataSlot;
 
 import javax.annotation.Nonnull;

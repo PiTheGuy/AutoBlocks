@@ -12,14 +12,14 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
-import pitheguy.autoblocks.init.ModBlocKEntityTypes;
+import pitheguy.autoblocks.init.ModBlockEntityTypes;
 import pitheguy.autoblocks.menu.AutoFarmerMenu;
 
 import java.util.List;
 
-public class AutoFarmerBlockEntity extends AutoBlockEntity {
+public class AutoFarmerBlockEntity extends BlockBasedAutoBlockEntity {
     public AutoFarmerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlocKEntityTypes.AUTO_FARMER.get(), pos, state, 58, 10, 2, ActionArea.BELOW);
+        super(ModBlockEntityTypes.AUTO_FARMER.get(), pos, state, 58, 10, 2, ActionArea.BELOW);
     }
 
     @Override

@@ -15,20 +15,20 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import pitheguy.autoblocks.blockentity.AutoBlockEntity;
-import pitheguy.autoblocks.init.ModBlocKEntityTypes;
+import pitheguy.autoblocks.blockentity.BlockBasedAutoBlockEntity;
+import pitheguy.autoblocks.init.ModBlockEntityTypes;
 import pitheguy.autoblocks.menu.AutoPlacerMenu;
 
 import java.util.Map;
 
-public class AutoPlacerBlockEntity extends AutoBlockEntity {
+public class AutoPlacerBlockEntity extends BlockBasedAutoBlockEntity {
     private static final Logger LOGGER = LogUtils.getLogger();
     private PlacerBuildingPlan plan;
     private boolean running;
     private String schematicName = "";
 
     public AutoPlacerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlocKEntityTypes.AUTO_PLACER.get(), pos, state, 39, 20, 0, ActionArea.ABOVE);
+        super(ModBlockEntityTypes.AUTO_PLACER.get(), pos, state, 39, 20, 0, ActionArea.ABOVE);
         this.mainInventoryStartSlot = 2;
         this.mainInventoryEndSlot = 38;
 

@@ -21,8 +21,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
 import pitheguy.autoblocks.client.gui.*;
+import pitheguy.autoblocks.init.ModBlockEntityTypes;
 import pitheguy.autoblocks.init.ModMenuTypes;
-import pitheguy.autoblocks.init.ModBlocKEntityTypes;
 import pitheguy.autoblocks.networking.AllPackets;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -45,6 +45,7 @@ public class AutoBlocks {
                 output.accept(AllBlocks.AUTO_LOGGER_BLOCK_ITEM.get());
                 output.accept(AllBlocks.AUTO_PLACER_BLOCK_ITEM.get());
                 output.accept(AllBlocks.AUTO_FARMER_BLOCK_ITEM.get());
+                output.accept(AllBlocks.AUTO_SHEARER_BLOCK_ITEM.get());
                 output.accept(AllItems.FILTER.get());
                 output.accept(AllItems.SCHEMATIC_CREATOR.get());
                 output.accept(AllItems.SPEED_UPGRADE.get());
@@ -67,7 +68,7 @@ public class AutoBlocks {
         CREATIVE_MODE_TABS.register(modEventBus);
 
         ModMenuTypes.MENU_TYPES.register(modEventBus);
-        ModBlocKEntityTypes.BLOCK_ENTITY_TYPES.register(modEventBus);
+        ModBlockEntityTypes.BLOCK_ENTITY_TYPES.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -109,6 +110,7 @@ public class AutoBlocks {
             MenuScreens.register(ModMenuTypes.AUTO_LOGGER.get(), AutoLoggerScreen::new);
             MenuScreens.register(ModMenuTypes.AUTO_PLACER.get(), AutoPlacerScreen::new);
             MenuScreens.register(ModMenuTypes.AUTO_FARMER.get(), AutoFarmerScreen::new);
+            MenuScreens.register(ModMenuTypes.AUTO_SHEARER.get(), AutoShearerScreen::new);
         }
     }
 }

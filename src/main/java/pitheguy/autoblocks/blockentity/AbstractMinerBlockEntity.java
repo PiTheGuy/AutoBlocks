@@ -3,24 +3,19 @@ package pitheguy.autoblocks.blockentity;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.slf4j.Logger;
 import pitheguy.autoblocks.AllItems;
-import pitheguy.autoblocks.AutoBlocks;
 import pitheguy.autoblocks.items.FilterItem;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
-public abstract class AbstractMinerBlockEntity extends AutoBlockEntity implements MenuProvider {
+public abstract class AbstractMinerBlockEntity extends BlockBasedAutoBlockEntity implements MenuProvider {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public AbstractMinerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int baseRange, int rangeIncreaseWithUpgrade, ActionArea actionArea) {

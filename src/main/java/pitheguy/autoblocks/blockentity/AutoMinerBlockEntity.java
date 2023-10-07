@@ -10,14 +10,14 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import pitheguy.autoblocks.init.ModBlocKEntityTypes;
+import pitheguy.autoblocks.init.ModBlockEntityTypes;
 import pitheguy.autoblocks.menu.AutoMinerMenu;
 
 public class AutoMinerBlockEntity extends AbstractMinerBlockEntity {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public AutoMinerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlocKEntityTypes.AUTO_MINER.get(), pos, state, 5, 2, ActionArea.BELOW);
+        super(ModBlockEntityTypes.AUTO_MINER.get(), pos, state, 5, 2, ActionArea.BELOW);
     }
 
     @Override

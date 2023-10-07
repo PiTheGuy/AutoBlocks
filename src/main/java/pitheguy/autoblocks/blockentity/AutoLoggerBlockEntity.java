@@ -8,12 +8,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
-import pitheguy.autoblocks.init.ModBlocKEntityTypes;
+import pitheguy.autoblocks.init.ModBlockEntityTypes;
 import pitheguy.autoblocks.menu.AutoLoggerMenu;
 
 public class AutoLoggerBlockEntity extends AbstractMinerBlockEntity {
     public AutoLoggerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlocKEntityTypes.AUTO_LOGGER.get(), pos, state, 15, 5, ActionArea.BELOW);
+        super(ModBlockEntityTypes.AUTO_LOGGER.get(), pos, state, 15, 5, ActionArea.BELOW);
     }
 
     @Override

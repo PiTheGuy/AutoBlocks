@@ -29,27 +29,17 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
     protected final ModItemHandler inventory;
     private final int baseRange;
     private final int rangeIncreaseWithUpgrade;
-    protected final ActionArea actionArea;
-    public int offsetX;
-    public int offsetY;
-    public int offsetZ;
     public int cooldown = 0;
-    public double currentFuelConsumption = 0;
-    protected EnergizerBlockEntity oldFuelSource = null;
     public EnergizerBlockEntity fuelSource = null;
     protected int mainInventoryStartSlot = 4;
     protected int mainInventoryEndSlot = 58;
 
 
-    public AutoBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int inventorySize, int baseRange, int rangeIncreaseWithUpgrade, ActionArea actionArea) {
+    public AutoBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int inventorySize, int baseRange, int rangeIncreaseWithUpgrade) {
         super(type, pos, state);
         this.inventory = new ModItemHandler(inventorySize);
         this.baseRange = baseRange;
         this.rangeIncreaseWithUpgrade = rangeIncreaseWithUpgrade;
-        this.actionArea = actionArea;
-        offsetX = -baseRange;
-        offsetY = actionArea.getDirection();
-        offsetZ = -baseRange;
     }
 
     @Override
@@ -72,9 +62,6 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
         ContainerHelper.saveAllItems(tag, inventory.toNonNullList());
-        tag.putInt("OffsetX", offsetX);
-        tag.putInt("OffsetY", offsetY);
-        tag.putInt("OffsetZ", offsetZ);
         tag.putInt("Cooldown", cooldown);
     }
 
@@ -84,9 +71,6 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
         NonNullList<ItemStack> inv = NonNullList.withSize(this.inventory.getSlots(), ItemStack.EMPTY);
         ContainerHelper.loadAllItems(tag, inv);
         this.inventory.setNonNullList(inv);
-        offsetX = tag.getInt("OffsetX");
-        offsetY = tag.getInt("OffsetY");
-        offsetZ = tag.getInt("OffsetZ");
         cooldown = tag.getInt("Cooldown");
     }
 
@@ -104,7 +88,7 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
 
     public abstract void runAction();
 
-    public abstract boolean canRunAtPosition(BlockPos pos);
+    public abstract boolean canRun();
 
     public abstract Status getStatus();
 
@@ -114,14 +98,6 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
         if (getUpgrade2().is(AllItems.SPEED_UPGRADE.get())) cooldown /= 2;
         if (getUpgrade3().is(AllItems.SPEED_UPGRADE.get())) cooldown /= 2;
         return cooldown;
-    }
-
-    public int getMaxBlocksPerTick() {
-        int maxBlocksPerTick = Config.maxBlocksPerTick;
-        if (getUpgrade1().is(AllItems.SPEED_UPGRADE.get())) maxBlocksPerTick *= 2;
-        if (getUpgrade2().is(AllItems.SPEED_UPGRADE.get())) maxBlocksPerTick *= 2;
-        if (getUpgrade3().is(AllItems.SPEED_UPGRADE.get())) maxBlocksPerTick *= 2;
-        return maxBlocksPerTick;
     }
 
     public int getRange() {
@@ -141,7 +117,6 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
     }
 
     protected void findFuelSource() {
-        this.oldFuelSource = fuelSource;
         this.fuelSource = null;
         double minDistance = Double.MAX_VALUE;
         for (int x = -Config.energizerSearchRadius; x <= Config.energizerSearchRadius; x++) {
@@ -166,26 +141,22 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
     }
 
     public void tick() {
+        boolean dirty = false;
         if (getStatus().isRunning()) {
-            if (cooldown > 0) cooldown--;
-            else {
-                BlockPos currentPos = this.getBlockPos().offset(offsetX, offsetY, offsetZ);
-                int checksLeft = getMaxBlocksPerTick();
-                while (!canRunAtPosition(currentPos)) {
-                    advanceToNextPosition();
-                    currentPos = this.getBlockPos().offset(offsetX, offsetY, offsetZ);
-                    checksLeft--;
-                    if (checksLeft <= 0) return;
+            if (cooldown > 0) {
+                cooldown--;
+                dirty = true;
+            } else {
+                if (canRun()) {
+                    runAction();
+                    cooldown = getCooldown();
+                    if (fuelSource != null) fuelSource.useFuel(getFuelPerAction());
+                    else LOGGER.warn("Unable to take fuel because fuelSource is null");
                 }
-                cooldown = getCooldown();
-                runAction();
-                if (fuelSource != null) fuelSource.useFuel(getFuelPerAction());
-                else LOGGER.warn("Unable to take fuel because fuelSource is null");
-                advanceToNextPosition();
             }
 
         }
-        update();
+        if (dirty) update();
     }
 
     public void discard(Level level, BlockPos pos) {
@@ -193,10 +164,6 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
             ItemEntity itemEntity = new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), item);
             level.addFreshEntity(itemEntity);
         });
-    }
-
-    protected BlockPos getRunningPosition() {
-        return this.getBlockPos().offset(offsetX, offsetY, offsetZ);
     }
 
     protected void addItemToInventory(ItemStack itemStack) {
@@ -222,7 +189,6 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
     protected boolean hasInventorySpace() {
         return IntStream.range(mainInventoryStartSlot, mainInventoryEndSlot).anyMatch(i -> this.inventory.getStackInSlot(i).isEmpty());
     }
-
 
     protected void removeItemFromInventory(Predicate<Item> predicate) {
         for (int i = mainInventoryStartSlot; i < mainInventoryEndSlot; i++) {
@@ -252,20 +218,6 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
         return hasItemInInventory(slotItem -> item == slotItem);
     }
 
-    protected void advanceToNextPosition() {
-        int range = getRange();
-        offsetX++;
-        if (offsetX > range) {
-            offsetX = -range;
-            offsetZ++;
-            if (offsetZ > range) {
-                offsetZ = -range;
-                offsetY += actionArea.getDirection();
-                if (offsetY > range + BASE_FUEL_PER_ACTION || offsetY < range - BASE_FUEL_PER_ACTION) offsetY = actionArea.getDirection();
-            }
-        }
-    }
-
     public void update() {
         requestModelDataUpdate();
         setChanged();
@@ -278,6 +230,7 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
     public enum Status {
         RUNNING("running", true),
         STOPPED("stopped", false),
+        WAITING("waiting", false),
         FINISHED("finished", false),
         NOT_ENOUGH_FUEL("not_enough_fuel", false),
         INVENTORY_FULL("inventory_full", false),
@@ -298,20 +251,6 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
 
         public boolean isRunning() {
             return this.running;
-        }
-    }
-
-    public enum ActionArea {
-        ABOVE(BASE_FUEL_PER_ACTION),
-        BELOW(-BASE_FUEL_PER_ACTION);
-        private final int direction;
-
-        ActionArea(int direction) {
-            this.direction = direction;
-        }
-
-        public int getDirection() {
-            return direction;
         }
     }
 }
