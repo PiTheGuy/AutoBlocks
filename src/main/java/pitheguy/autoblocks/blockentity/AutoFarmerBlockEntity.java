@@ -17,10 +17,16 @@ import pitheguy.autoblocks.init.ModBlockEntityTypes;
 import pitheguy.autoblocks.menu.AutoFarmerMenu;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class AutoFarmerBlockEntity extends BlockBasedAutoBlockEntity {
+    public static final int[] SLOTS_FOR_UP = new int[]{0, 1};
+    public static final int[] SLOTS_FOR_DOWN = IntStream.range(5, 59).toArray();
+
     public AutoFarmerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntityTypes.AUTO_FARMER.get(), pos, state, 58, 10, 2, ActionArea.BELOW);
+        super(ModBlockEntityTypes.AUTO_FARMER.get(), pos, state, 59, 10, 2, ActionArea.BELOW);
+        this.mainInventoryStartSlot = 5;
+        this.mainInventoryEndSlot = 59;
     }
 
     @Override
@@ -30,38 +36,47 @@ public class AutoFarmerBlockEntity extends BlockBasedAutoBlockEntity {
 
     @Override
     public ItemStack getUpgrade1() {
-        return this.inventory.getStackInSlot(1);
-    }
-
-    @Override
-    public ItemStack getUpgrade2() {
         return this.inventory.getStackInSlot(2);
     }
 
     @Override
-    public ItemStack getUpgrade3() {
+    public ItemStack getUpgrade2() {
         return this.inventory.getStackInSlot(3);
     }
 
     @Override
-    public void runAction() {
+    public ItemStack getUpgrade3() {
+        return this.inventory.getStackInSlot(4);
+    }
+
+    @Override
+    public boolean runAction() {
         BlockPos pos = getRunningPosition();
         BlockState state = level.getBlockState(pos);
-        if (canTillBlock(pos)){
+        if (canTillBlock(pos)) {
             level.setBlock(pos, Blocks.FARMLAND.defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
             level.playSound(null, pos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
             ItemStack hoeStack = this.inventory.getStackInSlot(0);
             if (hoeStack.hurt(1, level.random, null)) hoeStack.shrink(1);
+            return true;
         } else if (state.isAir() && level.getBlockState(pos.below()).is(Blocks.FARMLAND)) {
             Item seedItem = getSeedItem();
             level.setBlock(pos, ((BlockItem) seedItem).getBlock().defaultBlockState(), Block.UPDATE_ALL);
             level.playSound(null, pos, SoundEvents.CROP_PLANTED, SoundSource.BLOCKS, 1, 1);
             removeItemFromInventory(seedItem);
+            return true;
         } else if (state.getBlock() instanceof CropBlock crop && crop.isMaxAge(state)) {
             List<ItemStack> drops = Block.getDrops(level.getBlockState(pos), (ServerLevel) level, pos, null);
             drops.stream().filter(drop -> !drop.isEmpty()).forEach(this::addItemToInventory);
             level.destroyBlock(pos, false);
+            return false;
+        } else if (inventory.getStackInSlot(1).is(Items.BONE_MEAL) && state.getBlock() instanceof CropBlock crop && !crop.isMaxAge(state)) {
+            crop.growCrops(level, pos, state);
+            level.playSound(null, pos, SoundEvents.BONE_MEAL_USE, SoundSource.BLOCKS, 1, 1);
+            inventory.decrStackSize(1, 1);
+            return false;
         }
+        return true;
     }
 
     @Override
@@ -69,7 +84,8 @@ public class AutoFarmerBlockEntity extends BlockBasedAutoBlockEntity {
         if (canTillBlock(pos)) return true;
         BlockState state = level.getBlockState(pos);
         if (state.isAir() && level.getBlockState(pos.below()).is(Blocks.FARMLAND)) return true;
-        return state.getBlock() instanceof CropBlock crop && crop.isMaxAge(state);
+        if (state.getBlock() instanceof CropBlock crop && crop.isMaxAge(state)) return true;
+        return inventory.getStackInSlot(1).is(Items.BONE_MEAL) && state.getBlock() instanceof CropBlock crop && !crop.isMaxAge(state);
     }
 
     private boolean canTillBlock(BlockPos pos) {
@@ -128,19 +144,16 @@ public class AutoFarmerBlockEntity extends BlockBasedAutoBlockEntity {
 
     @Override
     public int[] getSlotsForFace(Direction side) {
-        int[] result = new int[55];
-        result[0] = 0;
-        for (int i = 1; i < 55; i++) result[i] = i + 3;
-        return result;
+        return side == Direction.DOWN ? SLOTS_FOR_DOWN : SLOTS_FOR_UP;
     }
 
     @Override
     public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction direction) {
-        return index == 0 && stack.getItem() instanceof HoeItem;
+        return (index == 0 && stack.getItem() instanceof HoeItem) || (index == 1 && stack.is(Items.BONE_MEAL));
     }
 
     @Override
     public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
-        return index >= 4;
+        return index >= 5;
     }
 }

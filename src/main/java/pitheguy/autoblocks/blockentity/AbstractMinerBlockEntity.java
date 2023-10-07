@@ -6,7 +6,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -52,13 +51,14 @@ public abstract class AbstractMinerBlockEntity extends BlockBasedAutoBlockEntity
     }
 
     @Override
-    public void runAction() {
+    public boolean runAction() {
         if (level != null && !level.isClientSide) {
             BlockPos minePos = getRunningPosition();
             List<ItemStack> drops = Block.getDrops(level.getBlockState(minePos), (ServerLevel) level, minePos, null);
             drops.stream().filter(drop -> !drop.isEmpty()).forEach(this::addItemToInventory);
             level.destroyBlock(minePos, false);
         }
+        return true;
     }
 
     protected void advanceToNextPosition() {

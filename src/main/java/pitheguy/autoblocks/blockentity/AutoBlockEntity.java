@@ -88,7 +88,7 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
 
     public abstract ItemStack getUpgrade3();
 
-    public abstract void runAction();
+    public abstract boolean runAction();
 
     public abstract boolean canRun();
 
@@ -197,7 +197,7 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
             ItemStack stack = this.inventory.getStackInSlot(i);
             if (stack.isEmpty()) continue;
             if (predicate.test(stack.getItem())) {
-                this.inventory.decrStackSize(i, BASE_FUEL_PER_ACTION);
+                this.inventory.decrStackSize(i, 1);
                 return;
             }
         }

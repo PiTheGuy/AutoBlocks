@@ -56,7 +56,7 @@ public class AutoPlacerBlockEntity extends BlockBasedAutoBlockEntity {
     }
 
     @Override
-    public void runAction() {
+    public boolean runAction() {
         if (level != null && !level.isClientSide) {
             BlockPos placePos = getRunningPosition();
             BlockState blockToPlace = this.plan.getBlock(offsetX, offsetY - 1, offsetZ);
@@ -64,6 +64,7 @@ public class AutoPlacerBlockEntity extends BlockBasedAutoBlockEntity {
             level.playSound(null, placePos, SoundEvents.STONE_PLACE, SoundSource.BLOCKS, 1, 1);
             removeItemFromInventory(blockToPlace.getBlock().asItem());
         }
+        return true;
     }
 
     public String getSchematicName() {

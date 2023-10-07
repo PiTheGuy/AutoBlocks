@@ -69,10 +69,9 @@ public abstract class BlockBasedAutoBlockEntity extends AutoBlockEntity implemen
                     if (checksLeft <= 0) return;
                 }
                 cooldown = getCooldown();
-                runAction();
+                if (runAction()) advanceToNextPosition();
                 if (fuelSource != null) fuelSource.useFuel(getFuelPerAction());
                 else LOGGER.warn("Unable to take fuel because fuelSource is null");
-                advanceToNextPosition();
             }
 
         }

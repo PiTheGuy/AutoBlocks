@@ -6,7 +6,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.HoeItem;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.items.SlotItemHandler;
 import pitheguy.autoblocks.AllBlocks;
 import pitheguy.autoblocks.blockentity.AutoFarmerBlockEntity;
 import pitheguy.autoblocks.init.ModMenuTypes;
@@ -29,16 +31,17 @@ public class AutoFarmerMenu extends AutoBlockMenu {
         final int startX = 8;
         //Farmer Inventory
         this.addSlot(new PredicateSlotItemHandler(tile.getInventory(), 0, 177, 18, item -> item instanceof HoeItem));
-        this.addSlot(new UpgradeSlotItemHandler(tile.getInventory(), 1, 177, 72));
-        this.addSlot(new UpgradeSlotItemHandler(tile.getInventory(), 2, 177, 90));
-        this.addSlot(new UpgradeSlotItemHandler(tile.getInventory(), 3, 177, 108));
+        this.addSlot(new SingleItemSlotItemHandler(tile.getInventory(), 1, 177, 36, Items.BONE_MEAL));
+        this.addSlot(new UpgradeSlotItemHandler(tile.getInventory(), 2, 177, 72));
+        this.addSlot(new UpgradeSlotItemHandler(tile.getInventory(), 3, 177, 90));
+        this.addSlot(new UpgradeSlotItemHandler(tile.getInventory(), 4, 177, 108));
         this.addDataSlot(cooldown = new FunctionalIntDataSlot(() -> this.tileEntity.cooldown,
                 value -> this.tileEntity.cooldown = value));
 
         int inventoryStartY = 18;
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 9; col++) {
-                this.addSlot(new ExcludeUpgradesSlotItemHandler(tile.getInventory(), 4+(row*9)+col, startX + (col * slotSizePlus2), inventoryStartY + (row * slotSizePlus2)));
+                this.addSlot(new ExcludeUpgradesSlotItemHandler(tile.getInventory(), 5+(row*9)+col, startX + (col * slotSizePlus2), inventoryStartY + (row * slotSizePlus2)));
             }
         }
 

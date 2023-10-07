@@ -66,9 +66,9 @@ public class AutoShearerBlockEntity extends AutoBlockEntity {
     }
 
     @Override
-    public void runAction() {
+    public boolean runAction() {
         List<Sheep> shearableSheep = findNearbySheep();
-        if (shearableSheep.isEmpty()) return;
+        if (shearableSheep.isEmpty()) return true;
         Sheep sheep = shearableSheep.get(level.random.nextInt(shearableSheep.size()));
         if (!level.isClientSide) {
             sheep.level().playSound(null, sheep, SoundEvents.SHEEP_SHEAR, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -78,6 +78,7 @@ public class AutoShearerBlockEntity extends AutoBlockEntity {
             ItemStack shearsStack = inventory.getStackInSlot(0);
             if (shearsStack.hurt(1, level.random, null)) shearsStack.shrink(1);
         }
+        return true;
     }
 
     private List<Sheep> findNearbySheep() {
