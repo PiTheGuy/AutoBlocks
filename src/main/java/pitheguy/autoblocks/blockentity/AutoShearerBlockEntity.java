@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +23,7 @@ import pitheguy.autoblocks.menu.AutoShearerMenu;
 import java.util.List;
 import java.util.Map;
 
-public class AutoShearerBlockEntity extends AutoBlockEntity {
+public class AutoShearerBlockEntity extends EntityBasedAutoBlockEntity {
     private static final Map<DyeColor, ItemLike> ITEM_BY_DYE = Util.make(Maps.newEnumMap(DyeColor.class), (p_29841_) -> {
         p_29841_.put(DyeColor.WHITE, Blocks.WHITE_WOOL);
         p_29841_.put(DyeColor.ORANGE, Blocks.ORANGE_WOOL);
@@ -42,7 +43,7 @@ public class AutoShearerBlockEntity extends AutoBlockEntity {
         p_29841_.put(DyeColor.BLACK, Blocks.BLACK_WOOL);
     });
     public AutoShearerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntityTypes.AUTO_SHEARER.get(), pos, state, 58, 3, 1);
+        super(ModBlockEntityTypes.AUTO_SHEARER.get(), pos, state, 58, 3, 1, Sheep.class);
     }
 
     @Override
@@ -67,22 +68,20 @@ public class AutoShearerBlockEntity extends AutoBlockEntity {
 
     @Override
     public boolean runAction() {
-        List<Sheep> shearableSheep = findNearbySheep();
-        if (shearableSheep.isEmpty()) return true;
-        Sheep sheep = shearableSheep.get(level.random.nextInt(shearableSheep.size()));
-        if (!level.isClientSide) {
-            sheep.level().playSound(null, sheep, SoundEvents.SHEEP_SHEAR, SoundSource.BLOCKS, 1.0F, 1.0F);
-            sheep.setSheared(true);
-            int woolDropped = 1 + level.random.nextInt(3);
-            this.addItemToInventory(new ItemStack(ITEM_BY_DYE.get(sheep.getColor()), woolDropped));
-            ItemStack shearsStack = inventory.getStackInSlot(0);
-            if (shearsStack.hurt(1, level.random, null)) shearsStack.shrink(1);
-        }
+        Sheep sheep = (Sheep) getAffectedEntity();
+        if (sheep == null) return true;
+        sheep.level().playSound(null, sheep, SoundEvents.SHEEP_SHEAR, SoundSource.BLOCKS, 1.0F, 1.0F);
+        sheep.setSheared(true);
+        int woolDropped = 1 + level.random.nextInt(3);
+        this.addItemToInventory(new ItemStack(ITEM_BY_DYE.get(sheep.getColor()), woolDropped));
+        ItemStack shearsStack = inventory.getStackInSlot(0);
+        if (shearsStack.hurt(1, level.random, null)) shearsStack.shrink(1);
         return true;
     }
 
-    private List<Sheep> findNearbySheep() {
-        return level.getEntitiesOfClass(Sheep.class, this.getRenderBoundingBox().inflate(getRange()), Sheep::readyForShearing);
+    @Override
+    protected <E extends Entity> boolean isValidEntity(E entity) {
+        return entity instanceof Sheep sheep && sheep.readyForShearing();
     }
 
     @Override
@@ -96,7 +95,7 @@ public class AutoShearerBlockEntity extends AutoBlockEntity {
         if (!(inventory.getStackInSlot(0).getItem() instanceof ShearsItem)) return Status.MISSING_TOOL;
         findFuelSource();
         if (fuelSource == null) return Status.NOT_ENOUGH_FUEL;
-        if (findNearbySheep().isEmpty()) return Status.WAITING;
+        if (findNearbyEntities().isEmpty()) return Status.WAITING;
         return Status.RUNNING;
     }
 

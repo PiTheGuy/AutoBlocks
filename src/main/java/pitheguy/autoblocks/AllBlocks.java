@@ -21,6 +21,7 @@ public class AllBlocks {
     public static final RegistryObject<Block> AUTO_PLACER = BLOCKS.register("auto_placer", AutoPlacerBlock::new);
     public static final RegistryObject<Block> AUTO_FARMER = BLOCKS.register("auto_farmer", AutoFarmerBlock::new);
     public static final RegistryObject<Block> AUTO_SHEARER = BLOCKS.register("auto_shearer", AutoShearerBlock::new);
+    public static final RegistryObject<Block> AUTO_BREEDER = BLOCKS.register("auto_breeder", AutoBreederBlock::new);
 
     //Block items
     public static final RegistryObject<Item> ENERGIZER_BLOCK_ITEM = AllItems.ITEMS.register("energizer", () -> new BlockItem(ENERGIZER.get(), new Item.Properties()));
@@ -29,4 +30,5 @@ public class AllBlocks {
     public static final RegistryObject<Item> AUTO_PLACER_BLOCK_ITEM = AllItems.ITEMS.register("auto_placer", () -> new BlockItem(AUTO_PLACER.get(), new Item.Properties()));
     public static final RegistryObject<Item> AUTO_FARMER_BLOCK_ITEM = AllItems.ITEMS.register("auto_farmer", () -> new BlockItem(AUTO_FARMER.get(), new Item.Properties()));
     public static final RegistryObject<Item> AUTO_SHEARER_BLOCK_ITEM = AllItems.ITEMS.register("auto_shearer", () -> new BlockItem(AUTO_SHEARER.get(), new Item.Properties()));
+    public static final RegistryObject<Item> AUTO_BREEDER_BLOCK_ITEM = AllItems.ITEMS.register("auto_breeder", () -> new BlockItem(AUTO_BREEDER.get(), new Item.Properties()));
 }

@@ -46,6 +46,7 @@ public class AutoBlocks {
                 output.accept(AllBlocks.AUTO_PLACER_BLOCK_ITEM.get());
                 output.accept(AllBlocks.AUTO_FARMER_BLOCK_ITEM.get());
                 output.accept(AllBlocks.AUTO_SHEARER_BLOCK_ITEM.get());
+                output.accept(AllBlocks.AUTO_BREEDER_BLOCK_ITEM.get());
                 output.accept(AllItems.FILTER.get());
                 output.accept(AllItems.SCHEMATIC_CREATOR.get());
                 output.accept(AllItems.SPEED_UPGRADE.get());
@@ -111,6 +112,7 @@ public class AutoBlocks {
             MenuScreens.register(ModMenuTypes.AUTO_PLACER.get(), AutoPlacerScreen::new);
             MenuScreens.register(ModMenuTypes.AUTO_FARMER.get(), AutoFarmerScreen::new);
             MenuScreens.register(ModMenuTypes.AUTO_SHEARER.get(), AutoShearerScreen::new);
+            MenuScreens.register(ModMenuTypes.AUTO_BREEDER.get(), AutoBreederScreen::new);
         }
     }
 }

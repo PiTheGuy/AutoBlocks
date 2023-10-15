@@ -192,11 +192,11 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
         return IntStream.range(mainInventoryStartSlot, mainInventoryEndSlot).anyMatch(i -> this.inventory.getStackInSlot(i).isEmpty());
     }
 
-    protected void removeItemFromInventory(Predicate<Item> predicate) {
+    protected void removeItemFromInventory(Predicate<ItemStack> predicate) {
         for (int i = mainInventoryStartSlot; i < mainInventoryEndSlot; i++) {
             ItemStack stack = this.inventory.getStackInSlot(i);
             if (stack.isEmpty()) continue;
-            if (predicate.test(stack.getItem())) {
+            if (predicate.test(stack)) {
                 this.inventory.decrStackSize(i, 1);
                 return;
             }
@@ -204,20 +204,20 @@ public abstract class AutoBlockEntity extends BlockEntity implements MenuProvide
     }
 
     protected void removeItemFromInventory(Item item) {
-        removeItemFromInventory(slotItem -> item == slotItem);
+        removeItemFromInventory(stack -> stack.is(item));
     }
 
-    protected boolean hasItemInInventory(Predicate<Item> predicate) {
+    protected boolean hasItemInInventory(Predicate<ItemStack> predicate) {
         for (int i = mainInventoryStartSlot; i < mainInventoryEndSlot; i++) {
             ItemStack stack = this.inventory.getStackInSlot(i);
             if (stack.isEmpty()) continue;
-            if (predicate.test(stack.getItem())) return true;
+            if (predicate.test(stack)) return true;
         }
         return false;
     }
 
     protected boolean hasItemInInventory(Item item) {
-        return hasItemInInventory(slotItem -> item == slotItem);
+        return hasItemInInventory(stack -> stack.is(item));
     }
 
     public void update() {

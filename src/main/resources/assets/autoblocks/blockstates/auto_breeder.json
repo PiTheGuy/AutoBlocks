@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "autoblocks:block/auto_breeder" }
+  }
+}

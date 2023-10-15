@@ -112,8 +112,8 @@ public class AutoFarmerBlockEntity extends BlockBasedAutoBlockEntity {
         return super.getMaxBlocksPerTick() * 10;
     }
 
-    private static boolean isSeedItem(Item item) {
-        if (item instanceof BlockItem blockItem) return blockItem.getBlock() instanceof CropBlock;
+    private static boolean isSeedItem(ItemStack stack) {
+        if (stack.getItem() instanceof BlockItem blockItem) return blockItem.getBlock() instanceof CropBlock;
         return false;
     }
 
@@ -131,7 +131,7 @@ public class AutoFarmerBlockEntity extends BlockBasedAutoBlockEntity {
         for (int i = mainInventoryStartSlot; i < mainInventoryEndSlot; i++) {
             ItemStack stack = this.inventory.getStackInSlot(i);
             if (stack.isEmpty()) continue;
-            if (isSeedItem(stack.getItem())) return stack.getItem();
+            if (isSeedItem(stack)) return stack.getItem();
         }
         return null;
     }

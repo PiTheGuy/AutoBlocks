@@ -15,4 +15,5 @@ public class ModMenuTypes {
     public static final RegistryObject<MenuType<AutoPlacerMenu>> AUTO_PLACER = MENU_TYPES.register("auto_placer", () -> IForgeMenuType.create(AutoPlacerMenu::new));
     public static final RegistryObject<MenuType<AutoFarmerMenu>> AUTO_FARMER = MENU_TYPES.register("auto_farmer", () -> IForgeMenuType.create(AutoFarmerMenu::new));
     public static final RegistryObject<MenuType<AutoShearerMenu>> AUTO_SHEARER = MENU_TYPES.register("auto_shearer", () -> IForgeMenuType.create(AutoShearerMenu::new));
+    public static final RegistryObject<MenuType<AutoBreederMenu>> AUTO_BREEDER = MENU_TYPES.register("auto_breeder", () -> IForgeMenuType.create(AutoBreederMenu::new));
 }
